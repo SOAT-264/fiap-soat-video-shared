@@ -53,3 +53,5 @@ disallow_untyped_defs = true
 [tool.pytest.ini_options]
 testpaths = ["tests"]
 python_files = ["test_*.py"]
+pythonpath = ["src"]
+addopts = "--cov=src/video_processor_shared --cov-report=term-missing --cov-fail-under=85"

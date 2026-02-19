@@ -46,18 +46,31 @@ coverage.xml
 .hypothesis/
 .pytest_cache/
 
+# Python tooling / local metadata
+.python-version
+pip-wheel-metadata/
+__pypackages__/
+.ipynb_checkpoints/
+
 # Translations
 *.mo
 *.pot
 
 # Environments
 .env
+.env.*
+!.env.example
 .venv
+.venv*/
 env/
 venv/
 ENV/
 env.bak/
 venv.bak/
+
+# Logs and OS files
+*.log
+.DS_Store
 
 # IDEs
 .idea/

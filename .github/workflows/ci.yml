@@ -32,8 +32,8 @@ jobs:
       - name: Run type checking
         run: mypy src/video_processor_shared
 
-      - name: Run tests
-        run: pytest tests/ -v --cov=video_processor_shared --cov-report=xml
+      - name: Run tests (coverage gate 85%)
+        run: pytest tests/ -v --cov-report=xml
 
       - name: Upload coverage
         uses: codecov/codecov-action@v4
