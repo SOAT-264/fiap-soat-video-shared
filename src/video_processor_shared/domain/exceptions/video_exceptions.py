@@ -1,17 +1,17 @@
 """Video-related Domain Exceptions."""
-from video_processor_shared.domain.exceptions.base import DomainException
+from video_processor_shared.domain.exceptions.base import DomainError
 
 
-class InvalidVideoFormatError(DomainException):
+class InvalidVideoFormatError(DomainError):
     """Raised when video format is not supported."""
     pass
 
 
-class VideoTooLargeError(DomainException):
+class VideoTooLargeError(DomainError):
     """Raised when video exceeds maximum allowed size."""
     pass
 
 
-class VideoNotFoundError(DomainException):
+class VideoNotFoundError(DomainError):
     """Raised when a video is not found."""
     pass

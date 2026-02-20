@@ -7,7 +7,7 @@ import pytest
 
 from video_processor_shared.contracts import ErrorResponse, PaginatedResponse, SuccessResponse
 from video_processor_shared.domain.events import JobCompletedEvent, JobFailedEvent, JobStartedEvent
-from video_processor_shared.domain.exceptions.base import DomainException
+from video_processor_shared.domain.exceptions.base import DomainError
 from video_processor_shared.domain.value_objects import Email, JobStatus, Password
 from video_processor_shared.dto import JobCreateDTO, JobDTO, UserCreateDTO, UserDTO, VideoDTO, VideoUploadDTO
 
@@ -112,7 +112,7 @@ def test_job_dto_properties_and_job_create_dto():
 
 
 def test_domain_exception_and_additional_value_object_branches():
-    exc = DomainException("domain error")
+    exc = DomainError("domain error")
     assert str(exc) == "domain error"
 
     assert str(Email("test@example.com")) == "test@example.com"

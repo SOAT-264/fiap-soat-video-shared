@@ -1,19 +1,19 @@
 """Domain layer shared components."""
 
-from video_processor_shared.domain.value_objects import Email, Password, JobStatus
 from video_processor_shared.domain.events import (
     DomainEvent,
-    VideoUploadedEvent,
-    JobStartedEvent,
     JobCompletedEvent,
     JobFailedEvent,
+    JobStartedEvent,
+    VideoUploadedEvent,
 )
 from video_processor_shared.domain.exceptions import (
-    DomainException,
+    DomainError,
     InvalidEmailError,
-    WeakPasswordError,
     InvalidJobTransitionError,
+    WeakPasswordError,
 )
+from video_processor_shared.domain.value_objects import Email, JobStatus, Password
 
 __all__ = [
     # Value Objects
@@ -27,7 +27,7 @@ __all__ = [
     "JobCompletedEvent",
     "JobFailedEvent",
     # Exceptions
-    "DomainException",
+    "DomainError",
     "InvalidEmailError",
     "WeakPasswordError",
     "InvalidJobTransitionError",
