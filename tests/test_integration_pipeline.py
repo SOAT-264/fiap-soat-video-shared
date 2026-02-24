@@ -1,7 +1,7 @@
 """Integration-style tests for end-to-end shared workflow."""
 
 import asyncio
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 from io import BytesIO
 from unittest.mock import Mock
 from uuid import uuid4
@@ -67,7 +67,7 @@ def test_processing_completion_pipeline_integration(monkeypatch):
         progress=100,
         frame_count=120,
         zip_path=zip_key,
-        created_at=datetime.now(timezone.utc),
+        created_at=datetime.now(UTC),
     )
     response = SuccessResponse[JobDTO](data=job, message="completed")
 

@@ -1,13 +1,13 @@
 """Unit tests for DTOs, contracts and remaining domain branches."""
 
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 from uuid import uuid4
 
 import pytest
 
 from video_processor_shared.contracts import ErrorResponse, PaginatedResponse, SuccessResponse
 from video_processor_shared.domain.events import JobCompletedEvent, JobFailedEvent, JobStartedEvent
-from video_processor_shared.domain.exceptions.base import DomainException
+from video_processor_shared.domain.exceptions.base import DomainError
 from video_processor_shared.domain.value_objects import Email, JobStatus, Password
 from video_processor_shared.dto import JobCreateDTO, JobDTO, UserCreateDTO, UserDTO, VideoDTO, VideoUploadDTO
 
@@ -56,7 +56,7 @@ def test_user_create_dto_validations_and_user_dto():
         email="user@test.com",
         full_name="User",
         is_active=True,
-        created_at=datetime.now(timezone.utc),
+        created_at=datetime.now(UTC),
     )
     assert user.is_active is True
 
@@ -78,7 +78,7 @@ def test_video_upload_dto_validations_and_video_dto_property():
         file_path="videos/x/video.mp4",
         file_size=2 * 1024 * 1024,
         format="mp4",
-        created_at=datetime.now(timezone.utc),
+        created_at=datetime.now(UTC),
     )
     assert dto.file_size_mb == 2.0
 
@@ -94,7 +94,7 @@ def test_job_dto_properties_and_job_create_dto():
         status=JobStatus.COMPLETED,
         progress=100,
         zip_size=3 * 1024 * 1024,
-        created_at=datetime.now(timezone.utc),
+        created_at=datetime.now(UTC),
     )
     assert job.zip_size_mb == 3.0
     assert job.is_terminal is True
@@ -105,14 +105,14 @@ def test_job_dto_properties_and_job_create_dto():
         user_id=uuid4(),
         status=JobStatus.PROCESSING,
         progress=50,
-        created_at=datetime.now(timezone.utc),
+        created_at=datetime.now(UTC),
     )
     assert no_zip.zip_size_mb is None
     assert no_zip.is_terminal is False
 
 
 def test_domain_exception_and_additional_value_object_branches():
-    exc = DomainException("domain error")
+    exc = DomainError("domain error")
     assert str(exc) == "domain error"
 
     assert str(Email("test@example.com")) == "test@example.com"
