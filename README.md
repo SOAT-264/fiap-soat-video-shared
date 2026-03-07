@@ -1,202 +1,67 @@
-# 📦 Video Processor - Shared Library
+# fiap-soat-video-shared
 
-[![PyPI](https://img.shields.io/badge/python-3.11+-blue.svg)](https://www.python.org/)
-[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+## Introdução
+Biblioteca compartilhada do ecossistema FIAP SOAT Video Processor. Ela concentra contratos, eventos de domínio, value objects e utilitários AWS usados pelos microserviços.
 
-> Biblioteca compartilhada contendo Value Objects, DTOs, Events e AWS Clients usados por todos os microserviços.
+## Sumário
+- Explicação do projeto
+- Objetivo
+- Como funciona
+- Integrações com outros repositórios
+- Como executar
+- Como testar
 
-## 📋 Índice
+## Explicação do projeto
+Este repositório não expõe API própria. Ele é um pacote Python reutilizável com:
+- `domain`: eventos, exceções e value objects.
+- `contracts` e `dto`: modelos compartilhados para troca de dados.
+- `aws`: wrappers para S3, SQS, SNS e SES.
 
-- [Instalação](#-instalação)
-- [Componentes](#-componentes)
-- [Uso](#-uso)
-- [AWS Services](#-aws-services)
-- [Testes](#-testes)
+Sua principal função é evitar duplicação de regras e manter contratos consistentes em todo o sistema.
 
----
+## Objetivo
+Padronizar o núcleo de contratos e comportamentos transversais da arquitetura de microserviços.
 
-## 📦 Instalação
+## Como funciona
+1. Os microserviços instalam este pacote como dependência (`video-processor-shared`).
+2. Eventos de domínio comuns (`VideoUploadedEvent`, `JobCompletedEvent`, `JobFailedEvent`) são reaproveitados nos fluxos assíncronos.
+3. Value objects como `Email`, `Password` e `JobStatus` reforçam regras de domínio compartilhadas.
+4. Adaptadores AWS compartilham padrão de acesso para storage e mensageria.
 
-### Via pip (de outro microserviço)
+## Integrações com outros repositórios
+| Repositório integrado | Como integra | Para que serve |
+| --- | --- | --- |
+| `fiap-soat-video-auth` | Reuso de value objects e exceções de domínio | Uniformizar validações de identidade e erros de negócio |
+| `fiap-soat-video-service` | Reuso de eventos/exceções (`VideoUploadedEvent`, erros de upload) | Padronizar contratos do início do pipeline de vídeo |
+| `fiap-soat-video-jobs` | Reuso de eventos e `JobStatus` | Padronizar estados e eventos de processamento |
+| `fiap-soat-video-notifications` | Dependência de contratos compartilhados no ecossistema | Garantir consistência entre eventos recebidos e enviados |
+| `fiap-soat-video-local-dev` | Imagens Docker dos serviços instalam o pacote localmente no build | Garantir que todos os serviços rodem com o mesmo contrato compartilhado |
 
-```bash
-pip install git+https://github.com/morgadope/fiap-soat-video-shared.git
-```
+## Como executar
+### Pré-requisitos
+- Python 3.11+
 
-### Para desenvolvimento local
-
-```bash
-git clone https://github.com/morgadope/fiap-soat-video-shared.git
-cd fiap-soat-video-shared
+### Instalar em modo desenvolvimento
+```powershell
+cd /fiap-soat-video-shared
+python -m venv .venv
+.\.venv\Scripts\Activate.ps1
 pip install -e ".[dev]"
 ```
 
----
-
-## 🧩 Componentes
-
-### Value Objects
-
-```python
-from video_processor_shared.domain.value_objects import JobStatus, Email, Password
-
-# Job Status (Enum)
-status = JobStatus.PENDING  # PENDING, PROCESSING, COMPLETED, FAILED, CANCELLED
-
-# Email (validação automática)
-email = Email("user@example.com")
-
-# Password (requer senha forte)
-password = Password("SecurePass123!")
+### Verificação rápida do pacote
+```powershell
+cd /fiap-soat-video-shared
+.\.venv\Scripts\Activate.ps1
+python -c "from video_processor_shared import VideoUploadedEvent, JobStatus; print(VideoUploadedEvent.__name__, JobStatus.PENDING.value)"
 ```
 
-### Domain Events
-
-```python
-from video_processor_shared.domain.events import (
-    VideoUploaded,
-    JobStarted,
-    JobCompleted,
-    JobFailed,
-)
-
-# Evento de job completo
-event = JobCompleted(
-    job_id=uuid4(),
-    user_id=uuid4(),
-    video_id=uuid4(),
-    output_url="https://s3.../frames.zip",
-    frame_count=120,
-)
+## Como testar
+```powershell
+cd /fiap-soat-video-shared
+python -m venv .venv
+.\.venv\Scripts\Activate.ps1
+pip install -e ".[dev]"
+pytest
 ```
 
-### DTOs
-
-```python
-from video_processor_shared.dto import JobDTO, UserDTO, VideoDTO
-
-job = JobDTO(
-    id=uuid4(),
-    status="COMPLETED",
-    progress=100,
-    output_url="https://..."
-)
-```
-
----
-
-## ☁️ AWS Services
-
-A biblioteca inclui clients para integração com AWS (funcionam com LocalStack e AWS real):
-
-### S3 Storage
-
-```python
-from video_processor_shared.aws.s3_storage import S3StorageService
-
-s3 = S3StorageService()
-
-# Upload
-key = await s3.upload_video(file, "video.mp4", "user-123")
-
-# Download URL
-url = s3.get_download_url(key, expires_in=3600)
-```
-
-### SQS Queue
-
-```python
-from video_processor_shared.aws.sqs_service import SQSService
-
-sqs = SQSService(queue_name="job-queue")
-
-# Enviar mensagem
-await sqs.send_message({"job_id": "123", "video_key": "..."})
-
-# Receber mensagens
-messages = await sqs.receive_messages(max_messages=5)
-```
-
-### SNS Topics
-
-```python
-from video_processor_shared.aws.sns_service import SNSService
-
-sns = SNSService(topic_name="job-events")
-
-# Publicar evento
-await sns.publish_job_completed(
-    job_id="123",
-    user_id="456",
-    video_id="789",
-    output_url="https://...",
-    frame_count=100,
-)
-```
-
-### SES Email
-
-```python
-from video_processor_shared.aws.ses_service import SESService
-
-ses = SESService()
-
-# Enviar email
-await ses.send_job_completed_email(
-    to="user@example.com",
-    video_name="video.mp4",
-    frame_count=100,
-    download_url="https://..."
-)
-```
-
----
-
-## 🔧 Configuração
-
-Configure via variáveis de ambiente:
-
-```bash
-# Para LocalStack
-export AWS_ENDPOINT_URL=http://localhost:4566
-export AWS_ACCESS_KEY_ID=test
-export AWS_SECRET_ACCESS_KEY=test
-export AWS_REGION=us-east-1
-
-# Para AWS real (não precisa de endpoint)
-# Apenas configure as credenciais AWS
-```
-
----
-
-## 🧪 Testes
-
-```bash
-pytest tests/ -v --cov=video_processor_shared
-```
-
----
-
-## 📁 Estrutura
-
-```
-src/video_processor_shared/
-├── domain/
-│   ├── value_objects/    # Email, Password, JobStatus
-│   ├── events/           # DomainEvents
-│   └── exceptions/       # Custom exceptions
-├── dto/                  # Data Transfer Objects
-├── contracts/            # API response contracts
-└── aws/                  # AWS service clients
-    ├── __init__.py       # Client factory
-    ├── s3_storage.py    
-    ├── sqs_service.py   
-    ├── sns_service.py   
-    └── ses_service.py   
-```
-
----
-
-## 📄 Licença
-
-MIT License
