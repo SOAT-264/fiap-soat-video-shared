@@ -7,9 +7,17 @@ Biblioteca compartilhada do ecossistema FIAP SOAT Video Processor. Ela concentra
 - Explicação do projeto
 - Objetivo
 - Como funciona
+- Repositórios relacionados
 - Integrações com outros repositórios
 - Como executar
 - Como testar
+
+## Repositórios relacionados
+- [fiap-soat-video-local-dev](https://github.com/SOAT-264/fiap-soat-video-local-dev)
+- [fiap-soat-video-auth](https://github.com/SOAT-264/fiap-soat-video-auth)
+- [fiap-soat-video-jobs](https://github.com/SOAT-264/fiap-soat-video-jobs)
+- [fiap-soat-video-notifications](https://github.com/SOAT-264/fiap-soat-video-notifications)
+- [fiap-soat-video-service](https://github.com/SOAT-264/fiap-soat-video-service)
 
 ## Explicação do projeto
 Este repositório não expõe API própria. Ele é um pacote Python reutilizável com:
