@@ -1,6 +1,8 @@
 # fiap-soat-video-shared
 
 ## Introdução
+> Este repositório faz parte do projeto [FIAP SOAT Video Processor](https://github.com/SOAT-264/fiap-soat-video-local-dev).
+
 Biblioteca compartilhada do ecossistema FIAP SOAT Video Processor. Ela concentra contratos, eventos de domínio, value objects e utilitários AWS usados pelos microserviços.
 
 ## Sumário
